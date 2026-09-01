@@ -1,9 +1,9 @@
 // Firebase configuration — values injected from environment variables.
 // Copy .env.example to .env.local and fill in your Firebase project credentials.
 import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
-import { getAuth } from 'firebase/auth'
-import { getStorage } from 'firebase/storage'
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
+import { getAuth, connectAuthEmulator } from 'firebase/auth'
+import { getStorage, connectStorageEmulator } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,4 +19,13 @@ const app = initializeApp(firebaseConfig)
 export const db      = getFirestore(app)
 export const auth    = getAuth(app)
 export const storage = getStorage(app)
+
+// Connect to emulators in development mode
+if (import.meta.env.DEV) {
+  connectFirestoreEmulator(db, '127.0.0.1', 8080)
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
+  connectStorageEmulator(storage, '127.0.0.1', 9199)
+  console.log('Firebase connected to local emulators')
+}
+
 export default app
